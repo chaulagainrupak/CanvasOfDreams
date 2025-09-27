@@ -46,5 +46,5 @@ struct DialogueOption {
 
 // External arrays
 extern ColorStats colorStatsArray[74];
-extern std::vector<DialogueOption> npcDialogues;
+extern std::vector<DialogueOption> npcOptions;
 extern std::vector<DialogueOption> playerOptions;

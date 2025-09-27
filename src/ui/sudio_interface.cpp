@@ -132,7 +132,13 @@ void StudioInterface::setupButtons() {
   buttons.emplace_back(Button(
       Vector2{192, 64}, Vector2{400, 540}, LoadTexture("./res/sellbutton.png"),
       [this]() {
-        gameManager->changeState(GameState::AUCTION);
+        gameManager->rateArtPiece();
+
+        if (gameManager->getNPC().getArtPiecePrice() != 0) {
+          gameManager->changeState(GameState::AUCTION);
+        } else {
+          return;
+        }
 
         // NPC generation check
         {
@@ -147,8 +153,6 @@ void StudioInterface::setupButtons() {
             gameManager->setNPC(newNPC);
             gameManager->setLastNpcTime(now);
           }
-
-          gameManager->rateArtPiece();
         };
       }));
 

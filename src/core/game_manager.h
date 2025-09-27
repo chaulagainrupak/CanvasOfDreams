@@ -1,5 +1,6 @@
 #pragma once
 #include "../entities/npc.h"
+#include "conversation_handler.h"
 #include "game_state.h"
 #include "raylib.h"
 #include <chrono>
@@ -20,6 +21,7 @@ private:
   std::unique_ptr<Canvas> canvas;
   std::unique_ptr<StudioInterface> studioInterface;
   std::unique_ptr<AuctionInterface> auctionInterface;
+  std::unique_ptr<ConversationHandler> conversationHandler;
 
   NPC currentNpc;
   std::chrono::steady_clock::time_point lastNpcTime;

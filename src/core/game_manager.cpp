@@ -1,4 +1,5 @@
 #include "game_manager.h"
+#include "conversation_handler.h"
 #include "game_state.h"
 
 #include "../entities/brush.h"
@@ -7,6 +8,7 @@
 #include "../rendering/canvas.h"
 #include "../ui/auction_interface.h"
 #include "../ui/studio_interface.h"
+#include "conversation_handler.h"
 #include "definitions.h"
 
 #include <chrono>
@@ -36,7 +38,6 @@ void GameManager::initialize() {
   auctionInterface->setNPC(&currentNpc);
 
   lastNpcTime = std::chrono::steady_clock::now();
-
   loadGlobalAssets();
 }
 
@@ -73,6 +74,7 @@ void GameManager::render() {
   case GameState::AUCTION:
     auctionInterface->render();
     canvas->render();
+    currentNpc.render();
     break;
 
   case GameState::SHOP:
@@ -135,6 +137,11 @@ void GameManager::rateArtPiece() {
     }
   }
 
+  if (colorFrequency.size() < 1) {
+    currentNpc.setArtPiecePrice(0);
+    return;
+  }
+
   currentNpc.generateBasePrice(totalColoredPixels);
 
   for (auto &[index, freq] : colorFrequency) {
@@ -190,8 +197,8 @@ void GameManager::rateArtPiece() {
   float combinedEffect = 0.0f;
   combinedEffect += artStats.creativity * 0.15f;
   combinedEffect += artStats.happiness * 0.10f;
-  combinedEffect += artStats.negativity * -0.12f;
-  combinedEffect += artStats.sadness * -0.08f;
+  combinedEffect += artStats.negativity * -0.22f;
+  combinedEffect += artStats.sadness * -0.18f;
   combinedEffect += artStats.energy * 0.05f;
   combinedEffect += artStats.calmness * 0.03f;
   combinedEffect += artStats.patience * 0.02f;
@@ -245,6 +252,9 @@ void GameManager::rateArtPiece() {
     finalPrice = 1.0f;
 
   currentNpc.setArtPiecePrice(finalPrice);
+  conversationHandler = std::make_unique<ConversationHandler>(
+      npcOptions, playerOptions, &currentNpc);
+  conversationHandler->setArtPieceStatus(&artStats);
 
   TraceLog(LOG_INFO, "Base Price: $%.2f", basePrice);
   // TraceLog(LOG_INFO, "Diversity Factor: %.2f (colors: %d)", diversityFactor,
