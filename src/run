@@ -1,0 +1,3 @@
+#!/bin/bash
+
+time g++ main.cpp core/*.cpp rendering/*.cpp entities/*.cpp ui/*.cpp -lraylib -o CanvasOfDreams && ./CanvasOfDreams
