@@ -3,6 +3,7 @@
 #include "../entities/player.h"
 #include "../rendering/canvas.h"
 #include "studio_interface.h"
+#include <chrono>
 #include <raylib.h>
 
 StudioInterface::StudioInterface(GameManager *gm, Brush *brush, Canvas *canvas,
@@ -146,11 +147,11 @@ void StudioInterface::setupButtons() {
           float secondsSinceLast =
               std::chrono::duration<float>(now - gameManager->getLastNpcTime())
                   .count();
-
+          TraceLog(LOG_INFO, "LAST NPC TIME: %f", secondsSinceLast);
+          TraceLog(LOG_INFO, "NEW NPC?: %d",
+                   secondsSinceLast >= gameManager->getNpcCooldown());
           if (secondsSinceLast >= gameManager->getNpcCooldown()) {
-            NPC newNPC = NPC();
-            newNPC.initialize();
-            gameManager->setNPC(newNPC);
+            gameManager->setNPC(new NPC());
             gameManager->setLastNpcTime(now);
           }
         };

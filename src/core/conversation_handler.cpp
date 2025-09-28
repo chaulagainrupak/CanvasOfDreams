@@ -4,12 +4,12 @@
 
 ConversationHandler::ConversationHandler(
     std::vector<DialogueOption> &npcOptions,
-    std::vector<DialogueOption> &playerOptions, NPC *activeNpc)
-    : npcOpts(npcOptions), playerOpts(playerOptions), currentNpc(activeNpc) {
+    std::vector<DialogueOption> &playerOptions)
+    : npcOpts(npcOptions), playerOpts(playerOptions) {
   isFirstDialogue = true;
 }
 
-void ConversationHandler::setArtPieceStatus(ArtPieceStats *pieceStats) {
+void ConversationHandler::generateFirstDialogue(ArtPieceStats *pieceStats) {
 
   // Only generate dialogue if first time
   if (!isFirstDialogue) {
@@ -66,6 +66,7 @@ void ConversationHandler::setArtPieceStatus(ArtPieceStats *pieceStats) {
       bestScore = score;
       bestOption = &option;
     }
+    // TraceLog(LOG_INFO, "Score for: %s ; %.2f", option.dialogueText, score);
   }
 
   if (bestOption) {

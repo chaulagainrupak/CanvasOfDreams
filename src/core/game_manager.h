@@ -22,8 +22,8 @@ private:
   std::unique_ptr<StudioInterface> studioInterface;
   std::unique_ptr<AuctionInterface> auctionInterface;
   std::unique_ptr<ConversationHandler> conversationHandler;
+  std::unique_ptr<NPC> currentNpc;
 
-  NPC currentNpc;
   std::chrono::steady_clock::time_point lastNpcTime;
   const float npcCooldown = 150.0f; // 2.5 min
 
@@ -46,8 +46,9 @@ public:
   void changeState(GameState newState);
   GameState getCurrentState() const { return currentState; }
 
-  void setNPC(NPC npc) { currentNpc = npc; }
-  NPC &getNPC() { return currentNpc; };
+  // que?! IDK at this point im throwing rocks at a bamboo jungle hoping it works :(
+  void setNPC(NPC *newNPC){ currentNpc = std::unique_ptr<NPC>(newNPC); currentNpc->initialize();}
+  NPC &getNPC() { return *currentNpc; };
   void setLastNpcTime(std::chrono::steady_clock::time_point newTime) {
     lastNpcTime = newTime;
   }

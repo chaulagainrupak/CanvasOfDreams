@@ -1,6 +1,10 @@
 #pragma once
+#include "../core/definitions.h"
 #include <cmath>
+#include <memory>
 #include <raylib.h>
+
+class ConversationHandler;
 
 class NPC {
 private:
@@ -13,6 +17,9 @@ private:
   float baseArtPiecePrice;
 
   Texture2D characterTextureSheet;
+  ArtPieceStats artPieceStats;
+
+  std::unique_ptr<ConversationHandler> conversationHandler;
 
 public:
   NPC();
@@ -36,7 +43,13 @@ public:
     artPiecePrice = newArtPiecePrice;
   }
 
-  float getNpcConversationStat(){return (calmness + negativity + patience) / 3;};
+  void setArtPieceStatus(ArtPieceStats pieceStats);
+
+  ConversationHandler &getConversationHandler() { return *conversationHandler; }
+
+  float getNpcConversationStat() {
+    return (calmness + negativity + patience) / 3;
+  };
 
   void render();
 };

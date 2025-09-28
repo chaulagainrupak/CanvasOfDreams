@@ -10,9 +10,9 @@ enum CurrentSpeaker { PLAYER, BUYER };
 class ConversationHandler {
 public:
   ConversationHandler(std::vector<DialogueOption> &npcOpts,
-                      std::vector<DialogueOption> &playerOpts, NPC *activeNpc);
+                      std::vector<DialogueOption> &playerOpts);
 
-  void setArtPieceStatus(ArtPieceStats *pieceStas);
+  void generateFirstDialogue(ArtPieceStats *pieceStas);
 
 private:
   NPC *currentNpc;

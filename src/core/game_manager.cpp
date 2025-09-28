@@ -1,5 +1,4 @@
 #include "game_manager.h"
-#include "conversation_handler.h"
 #include "game_state.h"
 
 #include "../entities/brush.h"
@@ -8,7 +7,6 @@
 #include "../rendering/canvas.h"
 #include "../ui/auction_interface.h"
 #include "../ui/studio_interface.h"
-#include "conversation_handler.h"
 #include "definitions.h"
 
 #include <chrono>
@@ -32,10 +30,8 @@ void GameManager::initialize() {
   auctionInterface =
       std::make_unique<AuctionInterface>(this, canvas.get(), player.get());
 
-  NPC currentNpc = NPC();
-  currentNpc.initialize();
-  this->setNPC(currentNpc);
-  auctionInterface->setNPC(&currentNpc);
+  currentNpc = std::make_unique<NPC>();
+  currentNpc->initialize();
 
   lastNpcTime = std::chrono::steady_clock::now();
   loadGlobalAssets();
@@ -74,7 +70,7 @@ void GameManager::render() {
   case GameState::AUCTION:
     auctionInterface->render();
     canvas->render();
-    currentNpc.render();
+    currentNpc->render();
     break;
 
   case GameState::SHOP:
@@ -138,11 +134,11 @@ void GameManager::rateArtPiece() {
   }
 
   if (colorFrequency.size() < 1) {
-    currentNpc.setArtPiecePrice(0);
+    currentNpc->setArtPiecePrice(0);
     return;
   }
 
-  currentNpc.generateBasePrice(totalColoredPixels);
+  currentNpc->generateBasePrice(totalColoredPixels);
 
   for (auto &[index, freq] : colorFrequency) {
     TraceLog(LOG_INFO, "Color %s appears %d times",
@@ -192,7 +188,7 @@ void GameManager::rateArtPiece() {
            artStats.warmth, artStats.energy, artStats.creativity,
            artStats.happiness, artStats.sadness, artStats.dominance);
 
-  float basePrice = currentNpc.getBaseArtPiecePrice();
+  float basePrice = currentNpc->getBaseArtPiecePrice();
 
   float combinedEffect = 0.0f;
   combinedEffect += artStats.creativity * 0.15f;
@@ -251,10 +247,11 @@ void GameManager::rateArtPiece() {
   if (finalPrice < 1.0f)
     finalPrice = 1.0f;
 
-  currentNpc.setArtPiecePrice(finalPrice);
-  conversationHandler = std::make_unique<ConversationHandler>(
-      npcOptions, playerOptions, &currentNpc);
-  conversationHandler->setArtPieceStatus(&artStats);
+  currentNpc->setArtPiecePrice(finalPrice);
+  currentNpc->getConversationHandler().generateFirstDialogue(&artStats);
+  // conversationHandler = std::make_unique<ConversationHandler>(
+  //     npcOptions, playerOptions, &currentNpc);
+  // conversationHandler->setArtPieceStatus(&artStats);
 
   TraceLog(LOG_INFO, "Base Price: $%.2f", basePrice);
   // TraceLog(LOG_INFO, "Diversity Factor: %.2f (colors: %d)", diversityFactor,
